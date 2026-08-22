@@ -62,3 +62,23 @@ output "backstage_ecr_repository_url" {
   description = "URL of the Backstage ECR repository."
   value       = module.ecr_backstage.repository_url
 }
+
+output "backstage_db_endpoint" {
+  description = "Backstage PostgreSQL endpoint."
+  value       = module.rds.db_endpoint
+}
+
+output "backstage_db_port" {
+  description = "Backstage PostgreSQL port."
+  value       = module.rds.db_port
+}
+
+output "backstage_db_name" {
+  description = "Backstage PostgreSQL database name."
+  value       = module.rds.db_name
+}
+
+output "backstage_db_secret_arn" {
+  description = "Secrets Manager ARN containing Backstage database credentials."
+  value       = module.rds.master_user_secret_arn
+}

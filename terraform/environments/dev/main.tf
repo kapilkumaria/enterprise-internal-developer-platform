@@ -51,3 +51,27 @@ module "ecr_backstage" {
 
   repository_name = "${var.project_name}/backstage"
 }
+
+module "rds" {
+  source = "../../modules/rds"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  vpc_id             = module.networking.vpc_id
+  private_subnet_ids = module.networking.private_subnet_ids
+
+  allowed_security_group_ids = [
+    module.eks.cluster_security_group_id
+  ]
+
+  database_name   = "backstage"
+  master_username = "backstageadmin"
+
+  instance_class = "db.t4g.micro"
+
+  allocated_storage     = 20
+  max_allocated_storage = 100
+
+  backup_retention_period = 7
+}
