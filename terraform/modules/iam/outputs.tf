@@ -17,3 +17,8 @@ output "eks_node_role_name" {
   description = "Name of the IAM role used by EKS worker nodes."
   value       = aws_iam_role.eks_node.name
 }
+
+output "vpc_cni_role_arn" {
+  description = "ARN of the IAM role used by the Amazon VPC CNI through EKS Pod Identity."
+  value       = aws_iam_role.vpc_cni.arn
+}
