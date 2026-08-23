@@ -1,0 +1,21 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: backstage-github-integration
+  namespace: backstage
+spec:
+  refreshInterval: 1h
+
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: SecretStore
+
+  target:
+    name: backstage-github-integration
+    creationPolicy: Owner
+
+  data:
+    - secretKey: GITHUB_TOKEN
+      remoteRef:
+        key: enterprise-idp/dev/backstage-github-integration
+        property: token

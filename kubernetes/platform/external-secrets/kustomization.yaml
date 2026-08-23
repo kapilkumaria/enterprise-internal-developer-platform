@@ -6,3 +6,4 @@ resources:
   - backstage-database-secret.yaml
   - backstage-database-config.yaml
   - backstage-github-oauth.yaml
+  - backstage-github-integration.yaml

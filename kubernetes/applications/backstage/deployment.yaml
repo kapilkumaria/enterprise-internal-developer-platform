@@ -44,6 +44,9 @@ spec:
             - secretRef:
                 name: backstage-github-oauth
 
+            - secretRef:
+                name: backstage-github-integration
+
           env:
             - name: NODE_ENV
               value: production
