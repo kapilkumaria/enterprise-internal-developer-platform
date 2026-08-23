@@ -114,4 +114,23 @@ resource "aws_eks_pod_identity_association" "external_secrets" {
   role_arn = module.iam.external_secrets_role_arn
 }
 
+resource "aws_iam_policy" "aws_load_balancer_controller" {
+  name        = "${var.project_name}-${var.environment}-aws-load-balancer-controller"
+  description = "IAM permissions required by the AWS Load Balancer Controller."
 
+  policy = file("${path.root}/../../policies/aws-load-balancer-controller-iam-policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
+  role       = module.iam.aws_load_balancer_controller_role_name
+  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
+}
+
+resource "aws_eks_pod_identity_association" "aws_load_balancer_controller" {
+  cluster_name = module.eks.cluster_name
+
+  namespace       = "kube-system"
+  service_account = "aws-load-balancer-controller"
+
+  role_arn = module.iam.aws_load_balancer_controller_role_arn
+}

@@ -132,4 +132,32 @@ resource "aws_iam_role" "external_secrets" {
   }
 }
 
+#
+# AWS Load Balancer Controller Pod Identity Role
+#
 
+data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession"
+    ]
+  }
+}
+
+resource "aws_iam_role" "aws_load_balancer_controller" {
+  name = "${var.project_name}-${var.environment}-aws-load-balancer-controller-role"
+
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume_role.json
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-aws-load-balancer-controller-role"
+  }
+}
