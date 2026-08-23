@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: idp-golden-path-prune-test
+  labels:
+    app.kubernetes.io/name: golden-path-service
+    app.kubernetes.io/instance: idp-golden-path-demo
+    purpose: argocd-prune-validation
+
+data:
+  message: "This ConfigMap exists only to validate Argo CD automated pruning."
