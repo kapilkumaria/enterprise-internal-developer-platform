@@ -26,7 +26,7 @@ spec:
 
       containers:
         - name: backstage
-          image: 931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/backstage:sha-47b38e4-amd64
+          image: 931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/backstage:sha-147252e-amd64
           imagePullPolicy: IfNotPresent
 
           ports:
