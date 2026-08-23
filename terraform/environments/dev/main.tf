@@ -61,9 +61,9 @@ module "rds" {
   vpc_id             = module.networking.vpc_id
   private_subnet_ids = module.networking.private_subnet_ids
 
-  allowed_security_group_ids = [
-    module.eks.cluster_security_group_id
-  ]
+  allowed_security_group_ids = {
+    eks_cluster = module.eks.cluster_security_group_id
+  }
 
   database_name   = "backstage"
   master_username = "backstageadmin"
@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "external_secrets" {
 
     resources = [
       module.rds.master_user_secret_arn,
-      "arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-7zALAU"
+      "arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-xse46L"
     ]
   }
 }

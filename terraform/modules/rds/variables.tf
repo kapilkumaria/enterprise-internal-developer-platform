@@ -19,8 +19,9 @@ variable "private_subnet_ids" {
 }
 
 variable "allowed_security_group_ids" {
-  description = "Security groups permitted to connect to PostgreSQL."
-  type        = list(string)
+  description = "Map of security groups permitted to connect to PostgreSQL."
+  type        = map(string)
+  default     = {}
 }
 
 variable "database_name" {

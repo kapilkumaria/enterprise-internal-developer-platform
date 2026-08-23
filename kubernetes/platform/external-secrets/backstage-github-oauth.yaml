@@ -17,10 +17,10 @@ spec:
   data:
     - secretKey: AUTH_GITHUB_CLIENT_ID
       remoteRef:
-        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-7zALAU
+        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-xse46L
         property: clientId
 
     - secretKey: AUTH_GITHUB_CLIENT_SECRET
       remoteRef:
-        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-7zALAU
+        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-xse46L
         property: clientSecret
