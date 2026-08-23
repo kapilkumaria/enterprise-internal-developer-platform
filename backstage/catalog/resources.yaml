@@ -1,0 +1,46 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: enterprise-idp-eks
+  title: Enterprise IDP EKS Cluster
+  description: Amazon EKS cluster hosting the Enterprise Internal Developer Platform
+  tags:
+    - aws
+    - eks
+    - kubernetes
+spec:
+  type: kubernetes-cluster
+  owner: platform-engineering
+  system: enterprise-idp
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: backstage-postgresql
+  title: Backstage PostgreSQL
+  description: Amazon RDS PostgreSQL database used by the Backstage backend
+  tags:
+    - aws
+    - rds
+    - postgresql
+spec:
+  type: database
+  owner: platform-engineering
+  system: enterprise-idp
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: backstage-ecr
+  title: Backstage ECR Repository
+  description: Amazon ECR repository storing Backstage container images
+  tags:
+    - aws
+    - ecr
+    - containers
+spec:
+  type: container-registry
+  owner: platform-engineering
+  system: enterprise-idp

@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: internal-developer-platform
+  description: Enterprise platform engineering domain providing standardized developer self-service capabilities
+spec:
+  owner: platform-engineering
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: enterprise-idp
+  description: Enterprise Internal Developer Platform built with Backstage on Amazon EKS
+spec:
+  owner: platform-engineering
+  domain: internal-developer-platform

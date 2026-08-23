@@ -1,0 +1,22 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: kapilkumaria
+  description: Platform administrator for the Enterprise Internal Developer Platform
+spec:
+  profile:
+    displayName: Kapil Kumaria
+  memberOf:
+    - platform-engineering
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform-engineering
+  description: Platform Engineering team responsible for the Enterprise Internal Developer Platform
+spec:
+  type: team
+  profile:
+    displayName: Platform Engineering
+  children: []
