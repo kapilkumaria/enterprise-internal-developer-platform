@@ -43,6 +43,10 @@ module "eks" {
   node_max_size       = var.node_max_size
 }
 
+#
+# Backstage ECR Repository
+#
+
 module "ecr_backstage" {
   source = "../../modules/ecr"
 
@@ -51,7 +55,6 @@ module "ecr_backstage" {
 
   repository_name = "${var.project_name}/backstage"
 }
-
 
 #
 # Golden Path Service ECR Repository
@@ -87,6 +90,10 @@ module "github_actions_oidc" {
   ecr_repository_arn = module.ecr_golden_path_demo.repository_arn
 }
 
+#
+# Backstage PostgreSQL Database
+#
+
 module "rds" {
   source = "../../modules/rds"
 
@@ -111,9 +118,51 @@ module "rds" {
   backup_retention_period = 7
 }
 
+#
+# AWS Account Metadata
+#
+# Used to construct account-scoped Secrets Manager ARNs without
+# hard-coding the AWS account ID.
+#
+
+data "aws_caller_identity" "current" {}
+
+#
+# Argo CD GitHub Repository Credential Secret
+#
+# Terraform creates the Secrets Manager secret itself, but intentionally
+# does NOT manage the PAT value. This prevents the GitHub PAT from being
+# written into Terraform state.
+#
+# The secret value will be populated separately and consumed by
+# External Secrets Operator.
+#
+
+resource "aws_secretsmanager_secret" "argocd_github" {
+  name        = "${var.project_name}/${var.environment}/argocd-github"
+  description = "GitHub repository credentials consumed by Argo CD through External Secrets Operator."
+
+  recovery_window_in_days = 0
+
+  tags = {
+    Name    = "${var.project_name}-${var.environment}-argocd-github"
+    Purpose = "ArgoCDRepositoryAuthentication"
+  }
+}
+
+#
+# External Secrets Operator IAM Policy
+#
+# ESO receives only read access to explicitly approved platform secrets.
+#
+# Secrets Manager appends a random suffix to secret ARNs, therefore
+# wildcard suffixes are used only for the specific approved Backstage
+# secret-name prefixes.
+#
+
 data "aws_iam_policy_document" "external_secrets" {
   statement {
-    sid    = "ReadBackstageDatabaseSecret"
+    sid    = "ReadApprovedPlatformSecrets"
     effect = "Allow"
 
     actions = [
@@ -123,11 +172,18 @@ data "aws_iam_policy_document" "external_secrets" {
 
     resources = [
       module.rds.master_user_secret_arn,
-      "arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-xse46L",
-      "arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-integration-L1hqLU"
+
+      "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.project_name}/${var.environment}/backstage-github-oauth-*",
+
+      "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.project_name}/${var.environment}/backstage-github-integration-*",
+
+      aws_secretsmanager_secret.argocd_github.arn
     ]
   }
 }
+
+
+
 
 resource "aws_iam_policy" "external_secrets" {
   name = "${var.project_name}-${var.environment}-external-secrets"
@@ -137,10 +193,19 @@ resource "aws_iam_policy" "external_secrets" {
   policy = data.aws_iam_policy_document.external_secrets.json
 }
 
+
+
+
+
+
 resource "aws_iam_role_policy_attachment" "external_secrets" {
   role       = module.iam.external_secrets_role_name
   policy_arn = aws_iam_policy.external_secrets.arn
 }
+
+#
+# External Secrets Operator EKS Pod Identity
+#
 
 resource "aws_eks_pod_identity_association" "external_secrets" {
   cluster_name = module.eks.cluster_name
@@ -150,6 +215,10 @@ resource "aws_eks_pod_identity_association" "external_secrets" {
 
   role_arn = module.iam.external_secrets_role_arn
 }
+
+#
+# AWS Load Balancer Controller IAM Policy
+#
 
 resource "aws_iam_policy" "aws_load_balancer_controller" {
   name        = "${var.project_name}-${var.environment}-aws-load-balancer-controller"
@@ -162,6 +231,10 @@ resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
   role       = module.iam.aws_load_balancer_controller_role_name
   policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
 }
+
+#
+# AWS Load Balancer Controller EKS Pod Identity
+#
 
 resource "aws_eks_pod_identity_association" "aws_load_balancer_controller" {
   cluster_name = module.eks.cluster_name
