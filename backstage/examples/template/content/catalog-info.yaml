@@ -1,8 +1,22 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
+
 metadata:
   name: ${{ values.name | dump }}
+  title: ${{ values.name | dump }}
+  description: ${{ values.description | dump }}
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+  tags:
+    - nodejs
+    - docker
+    - kubernetes
+    - golden-path
+
 spec:
   type: service
-  owner: user:guest
   lifecycle: experimental
+  owner: ${{ values.owner | dump }}
+  system: enterprise-idp

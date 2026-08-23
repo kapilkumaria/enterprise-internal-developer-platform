@@ -1,87 +1,110 @@
 apiVersion: scaffolder.backstage.io/v1beta3
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
+
 metadata:
-  name: example-nodejs-template
-  title: Example Node.js Template
-  description: An example template for the scaffolder that creates a simple Node.js service
+  name: enterprise-nodejs-service
+  title: Enterprise Node.js Service
+  description: Create a production-ready Node.js service using the Enterprise Internal Developer Platform golden path
+  tags:
+    - recommended
+    - nodejs
+    - docker
+    - kubernetes
+    - platform-engineering
+
 spec:
-  owner: user:guest
+  owner: group:default/platform-engineering
   type: service
 
-  # These parameters are used to generate the input form in the frontend, and are
-  # used to gather input data for the execution of the template.
   parameters:
-    - title: Fill in some steps
+    - title: Service Information
       required:
         - name
+        - description
+        - owner
       properties:
         name:
-          title: Name
+          title: Service Name
           type: string
-          description: Unique name of the component
+          description: Unique lowercase name for the service
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
           ui:field: EntityNamePicker
           ui:autofocus: true
-    - title: Choose a location
+
+        description:
+          title: Description
+          type: string
+          description: Short description of the service
+
+        owner:
+          title: Owner
+          type: string
+          description: Team responsible for this service
+          default: group:default/platform-engineering
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Group
+
+    - title: Repository
       required:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository Location
+          title: GitHub Repository
           type: string
+          description: Select the GitHub owner and repository name
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
               - github.com
+            allowedOwners:
+              - kapilkumaria
 
-  # These steps are executed in the scaffolder backend, using data that we gathered
-  # via the parameters above.
   steps:
-    # Each step executes an action, in this case one templates files into the working directory.
-    - id: fetch-base
-      name: Fetch Base
+    - id: fetchBase
+      name: Generate Service
       action: fetch:template
       input:
         url: ./content
         values:
           name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
 
-    # This step publishes the contents of the working directory to GitHub.
-    # If you or your organization prefer another default branch name over 'main'
-    # you can change that here.
     - id: publish
-      name: Publish
+      name: Create GitHub Repository
       action: publish:github
       input:
-        description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: 'main'
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: private
 
-    # The final step is to register our new component in the catalog.
     - id: register
-      name: Register
+      name: Register in Software Catalog
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
 
-    # Let's notify the user that the template has completed using the Notification action
     - id: notify
-      name: Notify
+      name: Notify Developer
       action: notification:send
       input:
         recipients: entity
         entityRefs:
-          - user:default/guest
-        title: 'Template executed'
-        info: 'Your template has been executed'
-        severity: 'normal'
+          - user:default/kapilkumaria
+        title: Service created
+        info: '${{ parameters.name }} was created and registered in the software catalog.'
+        severity: normal
 
-  # Outputs are displayed to the user after a successful execution of the template.
   output:
     links:
-      - title: Repository
-        url: ${{ steps['publish'].output.remoteUrl }}
-      - title: Open in catalog
+      - title: GitHub Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+
+      - title: Open in Software Catalog
         icon: catalog
-        entityRef: ${{ steps['register'].output.entityRef }}
+        entityRef: ${{ steps.register.output.entityRef }}

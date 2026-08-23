@@ -68,6 +68,11 @@ catalog:
       rules:
         - allow: [Resource]
 
+    - type: file
+      target: ./examples/template/template.yaml
+      rules:
+        - allow: [Template]
+
 kubernetes:
   serviceLocatorMethod:
     type: multiTenant
