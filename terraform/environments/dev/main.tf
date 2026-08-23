@@ -75,3 +75,43 @@ module "rds" {
 
   backup_retention_period = 7
 }
+
+data "aws_iam_policy_document" "external_secrets" {
+  statement {
+    sid    = "ReadBackstageDatabaseSecret"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret"
+    ]
+
+    resources = [
+      module.rds.master_user_secret_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "external_secrets" {
+  name = "${var.project_name}-${var.environment}-external-secrets"
+
+  description = "Allows External Secrets Operator to read Backstage RDS credentials."
+
+  policy = data.aws_iam_policy_document.external_secrets.json
+}
+
+resource "aws_iam_role_policy_attachment" "external_secrets" {
+  role       = module.iam.external_secrets_role_name
+  policy_arn = aws_iam_policy.external_secrets.arn
+}
+
+resource "aws_eks_pod_identity_association" "external_secrets" {
+  cluster_name = module.eks.cluster_name
+
+  namespace       = "external-secrets"
+  service_account = "external-secrets"
+
+  role_arn = module.iam.external_secrets_role_arn
+}
+
+
