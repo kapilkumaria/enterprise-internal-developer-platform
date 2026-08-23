@@ -5,6 +5,7 @@ metadata:
   namespace: backstage
   labels:
     app.kubernetes.io/name: backstage
+    backstage.io/kubernetes-id: backstage
 spec:
   type: ClusterIP
 

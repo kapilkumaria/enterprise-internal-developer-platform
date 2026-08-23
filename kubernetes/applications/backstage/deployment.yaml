@@ -6,6 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/name: backstage
     app.kubernetes.io/component: developer-portal
+    backstage.io/kubernetes-id: backstage
+
 spec:
   replicas: 1
 
@@ -18,8 +20,11 @@ spec:
       labels:
         app.kubernetes.io/name: backstage
         app.kubernetes.io/component: developer-portal
+        backstage.io/kubernetes-id: backstage
 
     spec:
+      serviceAccountName: backstage
+
       securityContext:
         seccompProfile:
           type: RuntimeDefault

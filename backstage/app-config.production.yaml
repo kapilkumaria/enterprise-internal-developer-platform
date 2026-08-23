@@ -67,3 +67,16 @@ catalog:
       target: ./catalog/resources.yaml
       rules:
         - allow: [Resource]
+
+kubernetes:
+  serviceLocatorMethod:
+    type: multiTenant
+
+  clusterLocatorMethods:
+    - type: config
+      clusters:
+        - name: enterprise-idp-dev
+          url: https://kubernetes.default.svc
+          authProvider: serviceAccount
+          skipTLSVerify: false
+          skipMetricsLookup: true

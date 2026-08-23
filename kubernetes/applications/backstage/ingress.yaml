@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: backstage
   namespace: backstage
+  metadata:
+  labels:
+    app.kubernetes.io/name: backstage
+    backstage.io/kubernetes-id: backstage
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
