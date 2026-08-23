@@ -86,3 +86,27 @@ variable "node_max_size" {
   type        = number
   default     = 3
 }
+
+variable "github_owner" {
+  description = "GitHub account or organization used by the Internal Developer Platform."
+  type        = string
+  default     = "kapilkumaria"
+}
+
+variable "golden_path_repository" {
+  description = "Golden Path validation repository permitted to use the GitHub Actions AWS role."
+  type        = string
+  default     = "idp-golden-path-demo"
+}
+
+variable "github_owner_id" {
+  description = "Immutable numeric GitHub account ID used by GitHub OIDC."
+  type        = string
+  default     = "42500918"
+}
+
+variable "golden_path_repository_id" {
+  description = "Immutable numeric GitHub repository ID for the Golden Path validation service."
+  type        = string
+  default     = "1344141938"
+}

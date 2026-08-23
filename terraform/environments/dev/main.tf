@@ -52,6 +52,41 @@ module "ecr_backstage" {
   repository_name = "${var.project_name}/backstage"
 }
 
+
+#
+# Golden Path Service ECR Repository
+#
+
+module "ecr_golden_path_demo" {
+  source = "../../modules/ecr"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  repository_name = "${var.project_name}/services/${var.golden_path_repository}"
+
+  image_tag_mutability = "IMMUTABLE"
+}
+
+#
+# GitHub Actions OIDC Federation
+#
+
+module "github_actions_oidc" {
+  source = "../../modules/github-actions-oidc"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  github_owner         = var.github_owner
+  github_owner_id      = var.github_owner_id
+  github_repository    = var.golden_path_repository
+  github_repository_id = var.golden_path_repository_id
+  github_branch        = "main"
+
+  ecr_repository_arn = module.ecr_golden_path_demo.repository_arn
+}
+
 module "rds" {
   source = "../../modules/rds"
 
