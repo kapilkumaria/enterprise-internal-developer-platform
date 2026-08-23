@@ -1,0 +1,26 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: backstage-github-oauth
+  namespace: backstage
+spec:
+  refreshInterval: 1h
+
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: SecretStore
+
+  target:
+    name: backstage-github-oauth
+    creationPolicy: Owner
+
+  data:
+    - secretKey: AUTH_GITHUB_CLIENT_ID
+      remoteRef:
+        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-7zALAU
+        property: clientId
+
+    - secretKey: AUTH_GITHUB_CLIENT_SECRET
+      remoteRef:
+        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-7zALAU
+        property: clientSecret

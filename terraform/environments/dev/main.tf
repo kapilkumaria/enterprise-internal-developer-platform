@@ -87,7 +87,8 @@ data "aws_iam_policy_document" "external_secrets" {
     ]
 
     resources = [
-      module.rds.master_user_secret_arn
+      module.rds.master_user_secret_arn,
+      "arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-7zALAU"
     ]
   }
 }

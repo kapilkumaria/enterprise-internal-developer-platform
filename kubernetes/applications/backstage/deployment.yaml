@@ -41,6 +41,9 @@ spec:
             - secretRef:
                 name: backstage-postgres
 
+            - secretRef:
+                name: backstage-github-oauth
+
           env:
             - name: NODE_ENV
               value: production
