@@ -1,0 +1,12 @@
+fullnameOverride: idp-golden-path-demo
+
+image:
+  repository: 931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/services/idp-golden-path-demo
+  tag: sha-7a9e63f79128010ca6e7e4177777372ea234bd84
+
+backstage:
+  kubernetesId: idp-golden-path-demo
+
+service:
+  type: ClusterIP
+  port: 3000

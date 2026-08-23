@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: idp-golden-path-demo
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/kapilkumaria/enterprise-internal-developer-platform.git
+    targetRevision: main
+    path: helm/golden-path-service
+
+    helm:
+      valueFiles:
+        - ../../gitops/applications/idp-golden-path-demo/values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: idp-golden-path-demo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
