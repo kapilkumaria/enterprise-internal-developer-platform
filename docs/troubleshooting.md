@@ -157,3 +157,98 @@ Verify:
 git status
 git log --oneline -6
 ```
+## Backstage Scaffold Failed During Yarn Dependency Installation
+
+## Symptoms
+
+The Backstage application generator successfully created the application
+structure but failed during `yarn install`.
+
+The error reported:
+
+```text
+nunjitsu@npm:^0.6.0: All versions satisfying "^0.6.0" are quarantined
+```
+The generated .yarnrc.yml contained:
+```
+npmMinimalAgeGate: 3d
+
+npmPreapprovedPackages:
+  - '@backstage/*'
+```
+## Root Cause
+
+The generated Backstage application enabled Yarn's package age gate as a
+software supply-chain security control.
+
+The nunjitsu dependency did not satisfy the configured minimum package-age
+requirement, causing Yarn to quarantine the package and abort installation.
+
+## Resolution
+
+Rather than disabling the security gate globally, a targeted exception was
+added:
+```
+npmPreapprovedPackages:
+  - '@backstage/*'
+  - nunjitsu
+```
+Dependency installation then completed successfully.
+
+## Validation
+
+The following commands completed successfully:
+```
+yarn install
+yarn tsc
+yarn start
+```
+The Backstage frontend returned HTTP 200 at:
+```
+http://localhost:3000
+```
+and the Software Catalog loaded successfully.
+
+## Lesson Learned
+
+Supply-chain security controls should not be disabled globally merely to
+resolve a single dependency issue.
+
+A narrowly scoped exception preserves the broader package-age protection
+while allowing a specifically reviewed dependency.
+
+
+Also add the correct local development command to `backstage/README.md` or your root project documentation later:
+
+```bash
+yarn start
+```
+not yarn dev.
+
+## Commit the Backstage baseline
+
+Before committing:
+```
+git diff --stat
+git status
+```
+Then:
+```
+git add backstage docs/troubleshooting.md
+```
+Check exactly what is staged:
+```
+git status
+```
+Make sure node_modules is not present.
+
+Then commit:
+```
+git commit -m "feat: scaffold Backstage developer portal"
+git push origin main
+```
+Verify:
+```
+git status
+git log --oneline -8
+```
