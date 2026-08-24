@@ -1,9 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
+
 metadata:
   name: backstage-postgres
   namespace: backstage
+
+# POSTGRES_HOST is replaced at environment bootstrap time by:
+# scripts/bootstrap-backstage-database-config.sh
 data:
-  POSTGRES_HOST: "enterprise-idp-dev-postgres.c7tby46l26p1.us-east-1.rds.amazonaws.com"
+  POSTGRES_HOST: "REPLACED_DURING_ENVIRONMENT_BOOTSTRAP"
   POSTGRES_PORT: "5432"
   POSTGRES_DB: "backstage"

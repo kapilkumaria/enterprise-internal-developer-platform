@@ -3,6 +3,7 @@ kind: ExternalSecret
 metadata:
   name: backstage-github-oauth
   namespace: backstage
+
 spec:
   refreshInterval: 1h
 
@@ -17,10 +18,10 @@ spec:
   data:
     - secretKey: AUTH_GITHUB_CLIENT_ID
       remoteRef:
-        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-xse46L
+        key: enterprise-idp/dev/backstage-github-oauth
         property: clientId
 
     - secretKey: AUTH_GITHUB_CLIENT_SECRET
       remoteRef:
-        key: arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/backstage-github-oauth-xse46L
+        key: enterprise-idp/dev/backstage-github-oauth
         property: clientSecret

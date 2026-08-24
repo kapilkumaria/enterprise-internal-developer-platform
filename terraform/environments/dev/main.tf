@@ -160,7 +160,30 @@ resource "aws_secretsmanager_secret" "argocd_github" {
 # secret-name prefixes.
 #
 
+
 data "aws_iam_policy_document" "external_secrets" {
+
+  #
+  # Secret discovery
+  #
+  # Required by External Secrets Operator when using dataFrom.find
+  # to discover the RDS-managed secret by AWS resource tags.
+  #
+  statement {
+    sid    = "DiscoverApprovedSecrets"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:ListSecrets",
+      "secretsmanager:BatchGetSecretValue"
+    ]
+
+    resources = ["*"]
+  }
+
+  #
+  # Explicit secret read permissions
+  #
   statement {
     sid    = "ReadApprovedPlatformSecrets"
     effect = "Allow"
@@ -182,9 +205,6 @@ data "aws_iam_policy_document" "external_secrets" {
   }
 }
 
-
-
-
 resource "aws_iam_policy" "external_secrets" {
   name = "${var.project_name}-${var.environment}-external-secrets"
 
@@ -192,11 +212,6 @@ resource "aws_iam_policy" "external_secrets" {
 
   policy = data.aws_iam_policy_document.external_secrets.json
 }
-
-
-
-
-
 
 resource "aws_iam_role_policy_attachment" "external_secrets" {
   role       = module.iam.external_secrets_role_name
