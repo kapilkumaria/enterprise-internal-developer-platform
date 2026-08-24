@@ -81,13 +81,11 @@ module "github_actions_oidc" {
   project_name = var.project_name
   environment  = var.environment
 
-  github_owner         = var.github_owner
-  github_owner_id      = var.github_owner_id
-  github_repository    = var.golden_path_repository
-  github_repository_id = var.golden_path_repository_id
-  github_branch        = "main"
+  github_owner    = var.github_owner
+  github_owner_id = var.github_owner_id
+  github_branch   = "main"
 
-  ecr_repository_arn = module.ecr_golden_path_demo.repository_arn
+  ecr_repository_arn_pattern = "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.project_name}/services/*"
 }
 
 #

@@ -19,14 +19,25 @@ resource "aws_iam_openid_connect_provider" "github_actions" {
 }
 
 #
-# GitHub Actions trust policy
+# Shared Golden Path GitHub Actions Trust Policy
 #
-# Initially restricted to one repository and the main branch.
+# This role is intentionally reusable by service repositories owned by
+# the approved immutable GitHub account ID.
+#
+# The subject pattern still restricts federation to:
+#
+#   - the approved GitHub owner
+#   - the immutable GitHub owner ID
+#   - repositories belonging to that owner
+#   - the approved deployment branch
+#
+# Individual repository IDs vary as Backstage creates new repositories,
+# therefore the repository portion is matched with StringLike.
 #
 
 data "aws_iam_policy_document" "github_actions_assume_role" {
   statement {
-    sid    = "GitHubActionsAssumeRole"
+    sid    = "GoldenPathGitHubActionsAssumeRole"
     effect = "Allow"
 
     actions = [
@@ -51,11 +62,11 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
 
       values = [
-        "repo:${var.github_owner}@${var.github_owner_id}/${var.github_repository}@${var.github_repository_id}:ref:refs/heads/${var.github_branch}"
+        "repo:${var.github_owner}@${var.github_owner_id}/*@*:ref:refs/heads/${var.github_branch}"
       ]
     }
   }
@@ -69,16 +80,16 @@ resource "aws_iam_role" "github_actions" {
   max_session_duration = 3600
 
   tags = {
-    Name       = "${var.project_name}-${var.environment}-github-actions-role"
-    Repository = "${var.github_owner}/${var.github_repository}"
-    Purpose    = "GoldenPathCI"
+    Name    = "${var.project_name}-${var.environment}-github-actions-role"
+    Owner   = var.github_owner
+    Purpose = "GoldenPathCI"
   }
 }
 
 #
-# ECR authorization token
+# ECR Authorization
 #
-# GetAuthorizationToken cannot be scoped to a single repository ARN.
+# GetAuthorizationToken does not support repository-level resource scoping.
 #
 
 data "aws_iam_policy_document" "github_actions_ecr" {
@@ -96,11 +107,18 @@ data "aws_iam_policy_document" "github_actions_ecr" {
   }
 
   #
-  # Repository-specific image push/pull permissions
+  # Golden Path ECR Namespace
+  #
+  # Service repositories may only interact with repositories underneath:
+  #
+  #   enterprise-idp/services/*
+  #
+  # This allows Backstage-created services to share the platform CI role
+  # without granting access to unrelated ECR repositories.
   #
 
   statement {
-    sid    = "GoldenPathRepositoryAccess"
+    sid    = "GoldenPathRepositoryNamespaceAccess"
     effect = "Allow"
 
     actions = [
@@ -115,7 +133,7 @@ data "aws_iam_policy_document" "github_actions_ecr" {
     ]
 
     resources = [
-      var.ecr_repository_arn
+      var.ecr_repository_arn_pattern
     ]
   }
 }

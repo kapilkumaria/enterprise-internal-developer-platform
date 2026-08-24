@@ -9,32 +9,22 @@ variable "environment" {
 }
 
 variable "github_owner" {
-  description = "GitHub account or organization that owns the Golden Path repository."
-  type        = string
-}
-
-variable "github_repository" {
-  description = "GitHub repository allowed to assume the CI role."
-  type        = string
-}
-
-variable "github_branch" {
-  description = "GitHub branch allowed to assume the CI role."
-  type        = string
-  default     = "main"
-}
-
-variable "ecr_repository_arn" {
-  description = "ARN of the ECR repository the GitHub Actions role may access."
+  description = "GitHub account or organization that owns Golden Path service repositories."
   type        = string
 }
 
 variable "github_owner_id" {
-  description = "Immutable numeric GitHub account ID used in the OIDC subject claim."
+  description = "Immutable numeric GitHub account ID used in GitHub OIDC subject claims."
   type        = string
 }
 
-variable "github_repository_id" {
-  description = "Immutable numeric GitHub repository ID used in the OIDC subject claim."
+variable "github_branch" {
+  description = "GitHub branch allowed to assume the Golden Path CI role."
+  type        = string
+  default     = "main"
+}
+
+variable "ecr_repository_arn_pattern" {
+  description = "ARN pattern restricting CI access to the approved Golden Path ECR repository namespace."
   type        = string
 }

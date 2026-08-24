@@ -105,8 +105,3 @@ variable "github_owner_id" {
   default     = "42500918"
 }
 
-variable "golden_path_repository_id" {
-  description = "Immutable numeric GitHub repository ID for the Golden Path validation service."
-  type        = string
-  default     = "1344141938"
-}
