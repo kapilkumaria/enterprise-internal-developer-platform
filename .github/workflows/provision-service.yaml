@@ -1,0 +1,76 @@
+name: Provision Golden Path Service
+
+on:
+  workflow_dispatch:
+    inputs:
+      service_name:
+        description: "Golden Path service name"
+        required: true
+        type: string
+
+      repository:
+        description: "GitHub repository in owner/repository format"
+        required: true
+        type: string
+
+      owner:
+        description: "Backstage owner entity reference"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Service Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate service name
+        env:
+          SERVICE_NAME: ${{ inputs.service_name }}
+        run: |
+          set -euo pipefail
+
+          echo "Service: ${SERVICE_NAME}"
+
+          if [[ ! "${SERVICE_NAME}" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+            echo "ERROR: invalid service name '${SERVICE_NAME}'"
+            exit 1
+          fi
+
+          echo "PASS: service name is valid"
+
+      - name: Validate repository
+        env:
+          REPOSITORY: ${{ inputs.repository }}
+        run: |
+          set -euo pipefail
+
+          echo "Repository: ${REPOSITORY}"
+
+          if [[ ! "${REPOSITORY}" =~ ^kapilkumaria/[a-zA-Z0-9._-]+$ ]]; then
+            echo "ERROR: repository must belong to approved GitHub owner"
+            exit 1
+          fi
+
+          echo "PASS: repository is valid"
+
+      - name: Display provisioning request
+        env:
+          SERVICE_NAME: ${{ inputs.service_name }}
+          REPOSITORY: ${{ inputs.repository }}
+          OWNER: ${{ inputs.owner }}
+        run: |
+          set -euo pipefail
+
+          echo "========================================"
+          echo " GOLDEN PATH PROVISIONING REQUEST"
+          echo "========================================"
+          echo "Service:    ${SERVICE_NAME}"
+          echo "Repository: ${REPOSITORY}"
+          echo "Owner:      ${OWNER}"
+          echo
+          echo "Target ECR:"
+          echo "enterprise-idp/services/${SERVICE_NAME}"
