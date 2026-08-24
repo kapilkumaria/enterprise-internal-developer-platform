@@ -1,0 +1,95 @@
+============================================================
+ ENTERPRISE INTERNAL DEVELOPER PLATFORM
+ PHASE 29 — GOLDEN PATH END-TO-END VALIDATION
+============================================================
+
+Captured: 2026-08-24T16:07:52-06:00
+
+===== PLATFORM REPOSITORY =====
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+8fba62b feat: add Golden Path service provisioning workflow
+3b27ef6 feat: enable shared Golden Path CI identity for services
+9a2ed82 fix: allow CI to inspect immutable ECR images
+b63d946 chore: promote idp-golden-path-demo sha-d11c8e751275631245c22f712a2a6ce95e51c1bf
+2626588 chore: promote idp-golden-path-demo sha-f69a7708f7035699c4f48ed17b840cf69e49007e
+4b1aa09 chore: promote idp-golden-path-demo sha-b4032a8851fd70fffa1b8f8aa8d71b369ed2090c
+9ecec06 fix: make Backstage rebuild-safe across infrastructure recreation
+c0c89f5 chore: promote golden path image d9ed71b
+d63fba2 test: validate Argo CD automated pruning
+1fa521a test: add Argo CD prune validation resource
+cd3696e feat: add secure Argo CD private repository authentication
+35693ea feat: add GitOps deployment for golden path service
+
+===== BACKSTAGE HEALTH =====
+{"status":"ok"}
+
+===== BACKSTAGE POD =====
+NAME                         READY   STATUS    RESTARTS   AGE   IP             NODE                           NOMINATED NODE   READINESS GATES
+backstage-7859494668-5bwlc   1/1     Running   0          73m   10.50.12.143   ip-10-50-12-144.ec2.internal   <none>           <none>
+
+===== EXTERNAL SECRETS =====
+NAME                           STORETYPE     STORE                 REFRESH INTERVAL   STATUS         READY   LAST SYNC
+backstage-database             SecretStore   aws-secrets-manager   1h                 SecretSynced   True    16m
+backstage-github-integration   SecretStore   aws-secrets-manager   1h                 SecretSynced   True    15m
+backstage-github-oauth         SecretStore   aws-secrets-manager   1h                 SecretSynced   True    15m
+
+===== GOLDEN PATH SERVICE SHA =====
+SERVICE_SHA=d11c8e751275631245c22f712a2a6ce95e51c1bf
+IMAGE_TAG=sha-d11c8e751275631245c22f712a2a6ce95e51c1bf
+
+===== GITHUB ACTIONS CI =====
+completed	success	fix: correctly consume ECR image existence output	CI	main	push	32779164549	31s	2026-08-24T21:44:36Z
+completed	failure	fix: make immutable ECR publishing idempotent	CI	main	push	32778472801	25s	2026-08-24T21:20:53Z
+completed	failure	feat: automate GitOps image promotion	CI	main	push	32778205907	47s	2026-08-24T21:12:16Z
+completed	success	feat: automate GitOps image promotion	CI	main	push	32778204853	34s	2026-08-24T21:12:15Z
+completed	success	chore: remove temporary OIDC diagnostics	CI	main	push	32667452417	49s	2026-08-24T20:19:29Z
+
+===== ECR IMAGE =====
+{
+    "Tags": [
+        "sha-d11c8e751275631245c22f712a2a6ce95e51c1bf"
+    ],
+    "Digest": "sha256:8bd6667c31ca81170037102f2d30f7fa77dd2ac95a5c77822c12f19eb29d6082",
+    "Pushed": "2026-08-24T15:23:18.128000-06:00"
+}
+
+===== GITOPS VALUES =====
+image:
+  repository: 931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/services/idp-golden-path-demo
+  tag: sha-d11c8e751275631245c22f712a2a6ce95e51c1bf
+
+
+===== GITOPS PROMOTION COMMIT =====
+b63d946 chore: promote idp-golden-path-demo sha-d11c8e751275631245c22f712a2a6ce95e51c1bf
+
+===== ARGO CD APPLICATION =====
+NAME                   SYNC STATUS   HEALTH STATUS   REVISION                                   PROJECT
+idp-golden-path-demo   Synced        Healthy         8fba62b431bc8527b51839070b987e78a0177518   default
+
+===== GOLDEN PATH WORKLOAD =====
+NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS            IMAGES                                                                                                                                   SELECTOR
+deployment.apps/idp-golden-path-demo   1/1     1            1           106m   golden-path-service   931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/services/idp-golden-path-demo:sha-d11c8e751275631245c22f712a2a6ce95e51c1bf   app.kubernetes.io/instance=idp-golden-path-demo,app.kubernetes.io/name=golden-path-service
+
+NAME                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE    SELECTOR
+service/idp-golden-path-demo   ClusterIP   172.20.200.244   <none>        3000/TCP   106m   app.kubernetes.io/instance=idp-golden-path-demo,app.kubernetes.io/name=golden-path-service
+
+NAME                                        READY   STATUS    RESTARTS   AGE   IP             NODE                           NOMINATED NODE   READINESS GATES
+pod/idp-golden-path-demo-5d6674d74b-zvh4z   1/1     Running   0          40m   10.50.11.208   ip-10-50-11-219.ec2.internal   <none>           <none>
+
+===== DEPLOYED IMAGE =====
+931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/services/idp-golden-path-demo:sha-d11c8e751275631245c22f712a2a6ce95e51c1bf
+
+===== END-TO-END IMAGE MATCH =====
+DEPLOYED_IMAGE_MATCH=PASS
+
+===== SERVICE HEALTH =====
+{"status":"ok","service":"idp-golden-path-demo"}{"status":"ok","service":"idp-golden-path-demo"}pod "phase29-evidence-smoke" deleted from idp-golden-path-demo namespace
+
+
+============================================================
+ PHASE 29 END-TO-END VALIDATION: PASS
+============================================================
