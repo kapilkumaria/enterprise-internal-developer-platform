@@ -192,7 +192,15 @@ data "aws_iam_policy_document" "external_secrets" {
     ]
 
     resources = [
-      module.rds.master_user_secret_arn,
+      # RDS-managed master-user secret.
+      #
+      # The physical Secrets Manager ARN changes whenever RDS is rebuilt,
+      # therefore the policy intentionally permits the RDS-managed secret
+      # namespace rather than referencing the current instance secret ARN.
+      #
+      # ExternalSecret discovery remains restricted by Project,
+      # Environment and Name tags.
+      "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:rds!db-*",
 
       "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.project_name}/${var.environment}/backstage-github-oauth-*",
 
