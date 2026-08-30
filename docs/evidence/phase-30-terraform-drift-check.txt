@@ -1,80 +1,80 @@
-module.iam.data.aws_iam_policy_document.vpc_cni_pod_identity_assume_role: Reading...
-module.iam.data.aws_iam_policy_document.eks_node_assume_role: Reading...
-module.iam.data.aws_iam_policy_document.external_secrets_assume_role: Reading...
-module.iam.data.aws_iam_policy_document.eks_cluster_assume_role: Reading...
-data.aws_caller_identity.current: Reading...
 module.iam.data.aws_iam_policy_document.aws_load_balancer_controller_assume_role: Reading...
-module.ecr_golden_path_demo.aws_ecr_repository.this: Refreshing state... [id=enterprise-idp/services/idp-golden-path-demo]
-aws_iam_policy.aws_load_balancer_controller: Refreshing state... [id=arn:aws:iam::931058976119:policy/enterprise-idp-dev-aws-load-balancer-controller]
-aws_secretsmanager_secret.argocd_github: Refreshing state... [id=arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/argocd-github-TArHtq]
-module.networking.aws_vpc.this: Refreshing state... [id=vpc-008d63d5732d891c2]
-module.iam.data.aws_iam_policy_document.eks_cluster_assume_role: Read complete after 0s [id=3552664922]
-module.iam.data.aws_iam_policy_document.eks_node_assume_role: Read complete after 0s [id=2851119427]
-module.iam.data.aws_iam_policy_document.external_secrets_assume_role: Read complete after 0s [id=819195744]
-module.iam.data.aws_iam_policy_document.aws_load_balancer_controller_assume_role: Read complete after 0s [id=819195744]
-module.iam.data.aws_iam_policy_document.vpc_cni_pod_identity_assume_role: Read complete after 0s [id=819195744]
 module.github_actions_oidc.aws_iam_openid_connect_provider.github_actions: Refreshing state... [id=arn:aws:iam::931058976119:oidc-provider/token.actions.githubusercontent.com]
 module.ecr_backstage.aws_ecr_repository.this: Refreshing state... [id=enterprise-idp/backstage]
-module.iam.aws_iam_role.eks_node: Refreshing state... [id=enterprise-idp-dev-eks-node-role]
-module.iam.aws_iam_role.eks_cluster: Refreshing state... [id=enterprise-idp-dev-eks-cluster-role]
+aws_secretsmanager_secret.argocd_github: Refreshing state... [id=arn:aws:secretsmanager:us-east-1:931058976119:secret:enterprise-idp/dev/argocd-github-TArHtq]
+module.iam.data.aws_iam_policy_document.eks_node_assume_role: Reading...
+module.iam.data.aws_iam_policy_document.vpc_cni_pod_identity_assume_role: Reading...
+data.aws_caller_identity.current: Reading...
+module.networking.aws_vpc.this: Refreshing state... [id=vpc-008d63d5732d891c2]
+module.iam.data.aws_iam_policy_document.eks_cluster_assume_role: Reading...
+aws_iam_policy.aws_load_balancer_controller: Refreshing state... [id=arn:aws:iam::931058976119:policy/enterprise-idp-dev-aws-load-balancer-controller]
+module.iam.data.aws_iam_policy_document.aws_load_balancer_controller_assume_role: Read complete after 0s [id=819195744]
+module.iam.data.aws_iam_policy_document.eks_node_assume_role: Read complete after 0s [id=2851119427]
+module.iam.data.aws_iam_policy_document.vpc_cni_pod_identity_assume_role: Read complete after 0s [id=819195744]
+module.ecr_golden_path_demo.aws_ecr_repository.this: Refreshing state... [id=enterprise-idp/services/idp-golden-path-demo]
+module.iam.data.aws_iam_policy_document.external_secrets_assume_role: Reading...
+module.iam.data.aws_iam_policy_document.eks_cluster_assume_role: Read complete after 0s [id=3552664922]
+module.iam.data.aws_iam_policy_document.external_secrets_assume_role: Read complete after 0s [id=819195744]
 module.iam.aws_iam_role.aws_load_balancer_controller: Refreshing state... [id=enterprise-idp-dev-aws-load-balancer-controller-role]
-data.aws_caller_identity.current: Read complete after 0s [id=931058976119]
+module.iam.aws_iam_role.eks_node: Refreshing state... [id=enterprise-idp-dev-eks-node-role]
 module.iam.aws_iam_role.vpc_cni: Refreshing state... [id=enterprise-idp-dev-vpc-cni-role]
+data.aws_caller_identity.current: Read complete after 0s [id=931058976119]
+module.iam.aws_iam_role.eks_cluster: Refreshing state... [id=enterprise-idp-dev-eks-cluster-role]
 module.iam.aws_iam_role.external_secrets: Refreshing state... [id=enterprise-idp-dev-external-secrets-role]
-data.aws_iam_policy_document.external_secrets: Reading...
-data.aws_iam_policy_document.external_secrets: Read complete after 0s [id=3077348471]
 module.github_actions_oidc.data.aws_iam_policy_document.github_actions_assume_role: Reading...
 module.github_actions_oidc.data.aws_iam_policy_document.github_actions_assume_role: Read complete after 0s [id=1232259775]
+data.aws_iam_policy_document.external_secrets: Reading...
+data.aws_iam_policy_document.external_secrets: Read complete after 0s [id=3077348471]
 module.github_actions_oidc.data.aws_iam_policy_document.github_actions_ecr: Reading...
 module.github_actions_oidc.data.aws_iam_policy_document.github_actions_ecr: Read complete after 0s [id=2456158394]
-aws_iam_policy.external_secrets: Refreshing state... [id=arn:aws:iam::931058976119:policy/enterprise-idp-dev-external-secrets]
 module.github_actions_oidc.aws_iam_role.github_actions: Refreshing state... [id=enterprise-idp-dev-github-actions-role]
+aws_iam_policy.external_secrets: Refreshing state... [id=arn:aws:iam::931058976119:policy/enterprise-idp-dev-external-secrets]
 module.github_actions_oidc.aws_iam_policy.github_actions_ecr: Refreshing state... [id=arn:aws:iam::931058976119:policy/enterprise-idp-dev-github-actions-ecr]
-module.ecr_backstage.aws_ecr_lifecycle_policy.this: Refreshing state... [id=enterprise-idp/backstage]
 module.ecr_golden_path_demo.aws_ecr_lifecycle_policy.this: Refreshing state... [id=enterprise-idp/services/idp-golden-path-demo]
+module.ecr_backstage.aws_ecr_lifecycle_policy.this: Refreshing state... [id=enterprise-idp/backstage]
 module.iam.aws_iam_role_policy_attachment.vpc_cni: Refreshing state... [id=enterprise-idp-dev-vpc-cni-role/arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy]
-module.iam.aws_iam_role_policy_attachment.ecr_pull_policy: Refreshing state... [id=enterprise-idp-dev-eks-node-role/arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly]
 module.iam.aws_iam_role_policy_attachment.eks_worker_node_policy: Refreshing state... [id=enterprise-idp-dev-eks-node-role/arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy]
-module.iam.aws_iam_role_policy_attachment.eks_cluster_policy: Refreshing state... [id=enterprise-idp-dev-eks-cluster-role/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy]
+module.iam.aws_iam_role_policy_attachment.ecr_pull_policy: Refreshing state... [id=enterprise-idp-dev-eks-node-role/arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly]
 aws_iam_role_policy_attachment.aws_load_balancer_controller: Refreshing state... [id=enterprise-idp-dev-aws-load-balancer-controller-role/arn:aws:iam::931058976119:policy/enterprise-idp-dev-aws-load-balancer-controller]
+module.iam.aws_iam_role_policy_attachment.eks_cluster_policy: Refreshing state... [id=enterprise-idp-dev-eks-cluster-role/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy]
 aws_iam_role_policy_attachment.external_secrets: Refreshing state... [id=enterprise-idp-dev-external-secrets-role/arn:aws:iam::931058976119:policy/enterprise-idp-dev-external-secrets]
 module.github_actions_oidc.aws_iam_role_policy_attachment.github_actions_ecr: Refreshing state... [id=enterprise-idp-dev-github-actions-role/arn:aws:iam::931058976119:policy/enterprise-idp-dev-github-actions-ecr]
 module.networking.aws_internet_gateway.this: Refreshing state... [id=igw-05082de2190eb5d6e]
-module.networking.aws_route_table.public: Refreshing state... [id=rtb-04b540b1590cbf1fb]
-module.networking.aws_subnet.private[1]: Refreshing state... [id=subnet-00b9fd6fcb57c402e]
 module.networking.aws_route_table.private: Refreshing state... [id=rtb-0a0a6221f35185bfd]
-module.networking.aws_subnet.public[0]: Refreshing state... [id=subnet-037a1ea0f857c4a99]
-module.networking.aws_subnet.public[1]: Refreshing state... [id=subnet-05e917692afbc1727]
 module.networking.aws_subnet.private[0]: Refreshing state... [id=subnet-0bbd65eaa9e81b21b]
+module.networking.aws_route_table.public: Refreshing state... [id=rtb-04b540b1590cbf1fb]
+module.networking.aws_subnet.public[0]: Refreshing state... [id=subnet-037a1ea0f857c4a99]
+module.networking.aws_subnet.private[1]: Refreshing state... [id=subnet-00b9fd6fcb57c402e]
+module.networking.aws_subnet.public[1]: Refreshing state... [id=subnet-05e917692afbc1727]
 module.rds.aws_security_group.postgres: Refreshing state... [id=sg-06130d89c54a5de89]
 module.networking.aws_eip.nat: Refreshing state... [id=eipalloc-09f1452ff13589060]
-module.networking.aws_route.public_internet: Refreshing state... [id=r-rtb-04b540b1590cbf1fb1080289494]
-module.rds.aws_vpc_security_group_egress_rule.postgres: Refreshing state... [id=sgr-0720edc9a7161160e]
 module.networking.aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-0f33930e3f147e282]
 module.networking.aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-0460b41b79fcc358b]
 module.rds.aws_db_subnet_group.this: Refreshing state... [id=enterprise-idp-dev-postgres]
+module.rds.aws_vpc_security_group_egress_rule.postgres: Refreshing state... [id=sgr-0720edc9a7161160e]
+module.networking.aws_route.public_internet: Refreshing state... [id=r-rtb-04b540b1590cbf1fb1080289494]
+module.eks.aws_eks_cluster.this: Refreshing state... [id=enterprise-idp-dev]
 module.networking.aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-08332f9cb042cfa23]
 module.networking.aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-0d2ce9aa5d499b5c1]
-module.eks.aws_eks_cluster.this: Refreshing state... [id=enterprise-idp-dev]
 module.networking.aws_nat_gateway.this: Refreshing state... [id=nat-02945ce6c6ab93895]
-module.networking.aws_route.private_nat: Refreshing state... [id=r-rtb-0a0a6221f35185bfd1080289494]
-module.eks.data.aws_eks_addon_version.coredns: Reading...
+module.eks.data.aws_eks_addon_version.kube_proxy: Reading...
 module.eks.data.aws_eks_addon_version.vpc_cni: Reading...
 module.eks.data.aws_eks_addon_version.pod_identity_agent: Reading...
-module.eks.data.aws_eks_addon_version.kube_proxy: Reading...
 aws_eks_pod_identity_association.aws_load_balancer_controller: Refreshing state... [id=a-x4tkpvxn0btxgmvpc]
 aws_eks_pod_identity_association.external_secrets: Refreshing state... [id=a-pkrk4rxgiphqwruu2]
+module.eks.data.aws_eks_addon_version.coredns: Reading...
 module.rds.aws_vpc_security_group_ingress_rule.postgres["eks_cluster"]: Refreshing state... [id=sgr-0fd3a35bfbf0c7ff5]
-module.eks.data.aws_eks_addon_version.pod_identity_agent: Read complete after 0s [id=eks-pod-identity-agent]
-module.eks.aws_eks_addon.pod_identity_agent: Refreshing state... [id=enterprise-idp-dev:eks-pod-identity-agent]
+module.networking.aws_route.private_nat: Refreshing state... [id=r-rtb-0a0a6221f35185bfd1080289494]
 module.rds.aws_db_instance.postgres: Refreshing state... [id=db-A7GKB3VUBBVHRXZKJOK24P2VO4]
-module.eks.data.aws_eks_addon_version.coredns: Read complete after 0s [id=coredns]
-module.eks.data.aws_eks_addon_version.vpc_cni: Read complete after 0s [id=vpc-cni]
-module.eks.data.aws_eks_addon_version.kube_proxy: Read complete after 0s [id=kube-proxy]
+module.eks.data.aws_eks_addon_version.vpc_cni: Read complete after 1s [id=vpc-cni]
+module.eks.data.aws_eks_addon_version.kube_proxy: Read complete after 1s [id=kube-proxy]
+module.eks.data.aws_eks_addon_version.pod_identity_agent: Read complete after 1s [id=eks-pod-identity-agent]
+module.eks.data.aws_eks_addon_version.coredns: Read complete after 1s [id=coredns]
+module.eks.aws_eks_addon.pod_identity_agent: Refreshing state... [id=enterprise-idp-dev:eks-pod-identity-agent]
 module.eks.aws_eks_addon.vpc_cni: Refreshing state... [id=enterprise-idp-dev:vpc-cni]
 module.eks.aws_eks_node_group.system: Refreshing state... [id=enterprise-idp-dev:system]
-module.eks.aws_eks_addon.coredns: Refreshing state... [id=enterprise-idp-dev:coredns]
 module.eks.aws_eks_addon.kube_proxy: Refreshing state... [id=enterprise-idp-dev:kube-proxy]
+module.eks.aws_eks_addon.coredns: Refreshing state... [id=enterprise-idp-dev:coredns]
 
 No changes. Your infrastructure matches the configuration.
 
