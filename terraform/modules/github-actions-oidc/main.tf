@@ -21,18 +21,19 @@ resource "aws_iam_openid_connect_provider" "github_actions" {
 #
 # Shared Golden Path GitHub Actions Trust Policy
 #
-# This role is intentionally reusable by service repositories owned by
-# the approved immutable GitHub account ID.
+# This role is intentionally reusable by Golden Path service repositories
+# owned by the approved GitHub account.
 #
-# The subject pattern still restricts federation to:
+# The GitHub OIDC subject restricts federation to:
 #
-#   - the approved GitHub owner
-#   - the immutable GitHub owner ID
-#   - repositories belonging to that owner
+#   - repositories belonging to the approved GitHub owner
 #   - the approved deployment branch
 #
-# Individual repository IDs vary as Backstage creates new repositories,
-# therefore the repository portion is matched with StringLike.
+# Repository names are dynamic because Backstage creates new repositories,
+# therefore the repository component is matched with StringLike.
+#
+# AWS permissions remain separately restricted by the attached least-privilege
+# ECR policy.
 #
 
 data "aws_iam_policy_document" "github_actions_assume_role" {
@@ -66,7 +67,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
       variable = "token.actions.githubusercontent.com:sub"
 
       values = [
-        "repo:${var.github_owner}@${var.github_owner_id}/*@*:ref:refs/heads/${var.github_branch}"
+        "repo:${var.github_owner}/*:ref:refs/heads/${var.github_branch}"
       ]
     }
   }

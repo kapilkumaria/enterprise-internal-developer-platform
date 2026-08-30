@@ -15,6 +15,7 @@ env:
   AWS_REGION: us-east-1
   AWS_ROLE_ARN: arn:aws:iam::931058976119:role/enterprise-idp-dev-github-actions-role
   ECR_REPOSITORY: enterprise-idp/services/idp-golden-path-demo
+  SERVICE_NAME: ${{ github.event.repository.name }}
 
 jobs:
   validate:
@@ -49,13 +50,13 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build container
-        run: docker build -t ${{ values.name }}:${GITHUB_SHA} .
+        run: docker build -t "${SERVICE_NAME}:${GITHUB_SHA}" .
 
       - name: Tag container for ECR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           docker tag \
-            ${{ values.name }}:${GITHUB_SHA} \
+            "${SERVICE_NAME}:${GITHUB_SHA}" \
             ${ECR_URL}:sha-${GITHUB_SHA}
         env:
           ECR_URL: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}

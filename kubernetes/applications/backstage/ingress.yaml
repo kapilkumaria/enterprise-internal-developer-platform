@@ -3,7 +3,6 @@ kind: Ingress
 metadata:
   name: backstage
   namespace: backstage
-  metadata:
   labels:
     app.kubernetes.io/name: backstage
     backstage.io/kubernetes-id: backstage
