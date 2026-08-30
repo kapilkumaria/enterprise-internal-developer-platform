@@ -15,7 +15,7 @@ env:
   AWS_REGION: us-east-1
   AWS_ROLE_ARN: arn:aws:iam::931058976119:role/enterprise-idp-dev-github-actions-role
   ECR_REPOSITORY: enterprise-idp/services/idp-golden-path-demo
-  SERVICE_NAME: ${{ github.event.repository.name }}
+  SERVICE_NAME: ${{ '${{ github.event.repository.name }}' }}
 
 jobs:
   validate:
@@ -41,8 +41,8 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ '${{ env.AWS_ROLE_ARN }}' }}
+          aws-region: ${{ '${{ env.AWS_REGION }}' }}
 
       - name: Login to Amazon ECR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -59,7 +59,7 @@ jobs:
             "${SERVICE_NAME}:${GITHUB_SHA}" \
             ${ECR_URL}:sha-${GITHUB_SHA}
         env:
-          ECR_URL: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          ECR_URL: ${{ '${{ steps.login-ecr.outputs.registry }}' }}/${{ '${{ env.ECR_REPOSITORY }}' }}
 
       - name: Push container to ECR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -67,4 +67,4 @@ jobs:
           docker push \
             ${ECR_URL}:sha-${GITHUB_SHA}
         env:
-          ECR_URL: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          ECR_URL: ${{ '${{ steps.login-ecr.outputs.registry }}' }}/${{ '${{ env.ECR_REPOSITORY }}' }}

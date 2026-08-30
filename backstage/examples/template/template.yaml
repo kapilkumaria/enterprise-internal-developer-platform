@@ -69,12 +69,6 @@ spec:
       input:
         url: ./content
 
-        # GitHub Actions uses the same ${{ ... }} expression syntax as
-        # Backstage Scaffolder. Preserve workflow files verbatim so that
-        # GitHub evaluates its own expressions after repository creation.
-        copyWithoutRender:
-          - .github/workflows/*
-
         values:
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
