@@ -54,3 +54,10 @@ Thumbs.db
 
 # Generated security scan reports
 security-reports/
+
+# Terraform runtime state and plans
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+.terraform/

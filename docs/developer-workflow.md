@@ -1,76 +1,112 @@
 # Developer Workflow
 
-## Developer Experience Goal
+## Objective
 
-Application developers should not need to understand the implementation
-details of Terraform, EKS, Argo CD, IAM, External Secrets, or Kubernetes
-platform services to onboard a standard application.
+The Internal Developer Platform provides developers with a standardized Golden Path for creating and deploying services without requiring them to manually assemble infrastructure and delivery tooling.
 
-The Internal Developer Platform provides an opinionated Golden Path.
+---
 
-## Standard Developer Workflow
+## Traditional Workflow
 
-### Step 1 — Access Backstage
+Without an IDP, a developer may need to understand:
 
-The developer opens the internal developer portal.
+```text
+Docker
+Kubernetes
+Helm
+Terraform
+IAM
+ECR
+GitHub Actions
+Argo CD
+Secrets
+Ingress
+AWS networking
+```
+---
 
-### Step 2 — Select Create
+# Golden Path
 
-The developer selects the approved microservice Golden Path.
+## Step 1 — Open Backstage
 
-### Step 3 — Supply Service Metadata
+The developer begins in the Backstage portal.
 
-Example:
+---
 
-Service Name: payment-api
-Owner: payments-team
-Runtime: Python
-Environment: dev
+## Step 2 — Discover Existing Services
 
-### Step 4 — Backstage Scaffolds the Service
+The software catalog provides visibility into registered services and ownership.
 
-Backstage generates the standardized repository structure and registers the
-new component in the Software Catalog.
+---
 
-### Step 5 — Continuous Integration
+## Step 3 — Select Software Template
 
-GitHub Actions validates, tests, scans, and builds the application.
+The developer selects the standardized microservice template.
 
-### Step 6 — Container Publishing
+---
 
-The validated container image is published to Amazon ECR.
+## Step 4 — Supply Service Metadata
 
-### Step 7 — GitOps Deployment
+The developer provides the required service metadata rather than manually creating platform configuration.
 
-Application desired-state configuration is stored in Git.
+---
 
-Argo CD detects the desired-state change and reconciles the Kubernetes
-cluster.
+## Step 5 — Generate Repository
 
-### Step 8 — Platform Guardrails
+Backstage scaffolds the standardized service repository.
 
-Kyverno validates Kubernetes security requirements.
+---
 
-External Secrets securely provides application secrets.
+## Step 6 — Continuous Integration
 
-### Step 9 — Runtime
+GitHub Actions validates the generated service.
 
-The application runs on Amazon EKS.
+The CI workflow can perform:
 
-### Step 10 — Observability
+- dependency installation
+- tests
+- container build
+- security scanning
+- ECR authentication
+- image publication
 
-Prometheus collects application/platform metrics.
+---
 
-Grafana provides dashboards.
+## Step 7 — Artifact Publication
 
-### Step 11 — Developer Visibility
+The resulting image is stored in Amazon ECR.
 
-Backstage provides a centralized view of:
+---
 
-- Service metadata
-- Ownership
-- Documentation
-- Repository
-- Kubernetes resources
-- Deployment information
-- Relevant operational links
+## Step 8 — GitOps Deployment
+
+Argo CD reconciles the desired Kubernetes state.
+
+---
+
+## Step 9 — Application Runtime
+
+The generated service runs on Amazon EKS.
+
+Developer Experience Result
+
+The developer workflow becomes:
+
+```text
+Choose template
+      ↓
+Provide metadata
+      ↓
+Generate service
+      ↓
+Commit / Push
+      ↓
+CI
+      ↓
+Container artifact
+      ↓
+GitOps
+      ↓
+Kubernetes
+```
+The platform team owns the underlying complexity while application teams consume standardized platform capabilities.

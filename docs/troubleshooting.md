@@ -1,254 +1,171 @@
-## EKS Managed Node Group Stuck During Creation
+# Troubleshooting and Engineering Lessons
 
-### Symptoms
+## Purpose
 
-The EKS control plane became `ACTIVE`, but the managed node group remained
-in `CREATING` state for more than 25 minutes.
+This document records significant engineering problems encountered while implementing the Internal Developer Platform.
 
-Terraform eventually had to be interrupted while waiting for node-group
-creation.
+Each incident is documented using:
 
-EC2 instances had successfully launched, but Kubernetes showed:
-
-STATUS
-NotReady
-NotReady
-
-
-The aws-node VPC CNI pods were repeatedly entering:
+```text
+Problem
+Symptoms
+Investigation
+Root Cause
+Resolution
+Validation
+Engineering Lesson
 ```
-CrashLoopBackOff
-```
-CoreDNS pods remained pending.
-
-## Investigation
-
-The worker EC2 instances were verified as running successfully across both
-private subnets.
-
-The EKS worker IAM role contained:
-
-- AmazonEKSWorkerNodePolicy
-- AmazonEC2ContainerRegistryPullOnly
-
-The node IAM trust relationship correctly allowed:
-```
-ec2.amazonaws.com
-```
-Running:
-```
-kubectl describe pod <aws-node-pod> -n kube-system
-```
-revealed:
-```
-MissingIAMPermissions
-
-Unauthorized operation:
-failed to call ec2:DescribeNetworkInterfaces
-```
-## Root Cause
-
-The Amazon VPC CNI requires AWS EC2 permissions to manage network interfaces
-and pod IP addresses.
-
-Those permissions are provided by:
-```
-AmazonEKS_CNI_Policy
-```
-The policy had intentionally not been attached to the EC2 worker-node role
-because workload-level least privilege was desired.
-
-However, the VPC CNI had not yet been configured with its own IAM role.
-
-As a result:
-```
-aws-node
-    ↓
-EC2 API
-    ↓
-AccessDenied
-    ↓
-CNI unavailable
-    ↓
-Nodes NotReady
-    ↓
-Managed Node Group CREATE_FAILED
-```
-## Resolution
-
-A dedicated IAM role was created for the VPC CNI.
-
-The role trusts:
-```
-pods.eks.amazonaws.com
-```
-and receives:
-```
-AmazonEKS_CNI_Policy
-```
-The VPC CNI add-on was configured with an EKS Pod Identity association for:
-```
-Namespace: kube-system
-ServiceAccount: aws-node
-```
-Terraform dependency ordering was also corrected so that:
-```
-EKS Cluster
-    ↓
-Pod Identity Agent
-    ↓
-VPC CNI + Pod Identity
-    ↓
-Managed Node Group
-    ↓
-CoreDNS / kube-proxy
-```
-The failed node group was then replaced.
-
-## Validation
-
-The replacement nodes became:
-```
-Ready
-```
-and all core components became healthy:
-```
-aws-node                 Running
-coredns                  Running
-kube-proxy               Running
-eks-pod-identity-agent   Running
-```
-## Lessons Learned
-- A running EC2 instance does not mean an EKS node is healthy.
-- Troubleshooting should follow the lifecycle from EC2 launch to kubelet
-registration to CNI initialization.
-- Kubernetes describe events often expose the exact AWS API permission
-causing a failure.
-- VPC CNI permissions should be isolated from the general EC2 node role.
-- EKS Pod Identity provides a cleaner least-privilege model.
-- Terraform resource dependency ordering matters during cluster bootstrap.
-```
-This is a strong senior-level troubleshooting example.
-
 ---
 
-# 6. Commit Phase 6
+# Issue 1 — EKS Worker Nodes Failed to Become Ready
 
-Now:
+## Problem
 
-```bash
-cd ~/Projects/enterprise-internal-developer-platform
-
-terraform fmt -recursive terraform/
-
-git status
-git diff
-```
-Then:
-```
-git add .
-
-git commit -m "infra: provision EKS cluster with Pod Identity networking"
-
-git push origin main
-```
-Verify:
-```
-git status
-git log --oneline -6
-```
-## Backstage Scaffold Failed During Yarn Dependency Installation
+EKS worker nodes were provisioned but Kubernetes reported them as NotReady.
 
 ## Symptoms
 
-The Backstage application generator successfully created the application
-structure but failed during `yarn install`.
+Observed symptoms included unhealthy networking components and workloads unable to schedule normally.
 
-The error reported:
+## Investigation
 
-```text
-nunjitsu@npm:^0.6.0: All versions satisfying "^0.6.0" are quarantined
-```
-The generated .yarnrc.yml contained:
-```
-npmMinimalAgeGate: 3d
+The investigation focused on:
 
-npmPreapprovedPackages:
-  - '@backstage/*'
-```
+- EKS node-group health
+- VPC CNI
+- `aws-node`
+- IAM permissions
+- EKS addon compatibility
+- Kubernetes events
+
 ## Root Cause
 
-The generated Backstage application enabled Yarn's package age gate as a
-software supply-chain security control.
+The EKS infrastructure itself was provisioned successfully, but the Kubernetes networking layer was not healthy.
 
-The nunjitsu dependency did not satisfy the configured minimum package-age
-requirement, causing Yarn to quarantine the package and abort installation.
+The managed worker nodes appeared in the EKS node group but remained `NotReady`. Investigation showed the `aws-node` containers from the Amazon VPC CNI repeatedly restarting, while CoreDNS remained Pending because healthy Kubernetes networking was not yet available.
+
+The investigation also exposed two implementation requirements: EKS managed-addon versions needed to be resolved using supported AWS addon-version discovery, and AWS-integrated workloads required an explicit identity model rather than relying on broad worker-node permissions.
 
 ## Resolution
 
-Rather than disabling the security gate globally, a targeted exception was
-added:
-```
-npmPreapprovedPackages:
-  - '@backstage/*'
-  - nunjitsu
-```
-Dependency installation then completed successfully.
+The EKS addon implementation was corrected to resolve supported addon versions through AWS EKS addon-version data sources.
+
+The VPC CNI was deployed as an EKS managed addon with the required AWS IAM configuration, and the EKS Pod Identity Agent was enabled for AWS-integrated Kubernetes workloads.
+
+The cluster was then validated at both infrastructure and Kubernetes layers using EKS status, node readiness, addon health, `aws-node`, CoreDNS and Kubernetes events.
 
 ## Validation
 
-The following commands completed successfully:
+Validation included:
+```text
+kubectl get nodes
+kubectl get pods -n kube-system
+kubectl get events -A
 ```
-yarn install
-yarn tsc
-yarn start
-```
-The Backstage frontend returned HTTP 200 at:
-```
-http://localhost:3000
-```
-and the Software Catalog loaded successfully.
+## Engineering Lesson
 
-## Lesson Learned
+Node-group state alone does not prove Kubernetes runtime health. Infrastructure-level validation must be combined with Kubernetes-level readiness checks.
 
-Supply-chain security controls should not be disabled globally merely to
-resolve a single dependency issue.
+---
 
-A narrowly scoped exception preserves the broader package-age protection
-while allowing a specifically reviewed dependency.
+# Issue 2 — EKS Addon Version Configuration
 
+## Problem
 
-Also add the correct local development command to `backstage/README.md` or your root project documentation later:
+Terraform rejected unsupported addon configuration during the initial EKS implementation.
 
-```bash
-yarn start
-```
-not yarn dev.
+## Root Cause
 
-## Commit the Backstage baseline
+Addon version discovery and resource configuration were implemented incorrectly for the AWS provider/API behavior being used.
 
-Before committing:
-```
-git diff --stat
-git status
-```
-Then:
-```
-git add backstage docs/troubleshooting.md
-```
-Check exactly what is staged:
-```
-git status
-```
-Make sure node_modules is not present.
+## Resolution
 
-Then commit:
+Addon versions were resolved using supported EKS addon version data sources and subsequently supplied to the addon resources.
+
+## Engineering Lesson
+
+Cloud-managed addons should not assume that Kubernetes version compatibility automatically means the newest arbitrary addon release is safe or supported. Version discovery should be explicit.
+
+---
+
+# Issue 3 — Workload Identity / AWS Permissions
+
+## Problem
+
+Platform workloads required AWS API access without embedding long-lived credentials.
+
+## Resolution
+
+Dedicated IAM roles and EKS Pod Identity associations were implemented.
+
+## Engineering Lesson
+
+Kubernetes service identity and AWS authorization should be explicitly mapped rather than relying on node-level IAM permissions.
+
+---
+
+# Issue 4 — RDS Credential Lifecycle
+
+## Problem
+
+Recreating RDS changes the AWS-managed database secret identity.
+
+## Risk
+
+A Kubernetes configuration referencing the previous secret could become stale after infrastructure reconstruction.
+
+## Resolution
+
+The current Terraform/RDS secret output is used during platform bootstrap rather than relying on an obsolete static ARN.
+
+## Engineering Lesson
+
+Dynamic infrastructure identifiers should be propagated through automation rather than copied permanently into downstream configuration.
+
+---
+
+# Issue 5 — Infrastructure Teardown Dependencies
+
+## Problem
+
+AWS networking cannot be removed while EKS-created resources continue to reference VPC resources.
+
+## Resolution
+
+Infrastructure was destroyed in dependency order:
+
+```text
+Applications
+   ↓
+Platform controllers
+   ↓
+EKS
+   ↓
+RDS
+   ↓
+Networking
 ```
-git commit -m "feat: scaffold Backstage developer portal"
-git push origin main
-```
-Verify:
-```
-git status
-git log --oneline -8
-```
+## Engineering Lesson
+
+Terraform dependency graphs handle managed resources, but externally created cloud resources can introduce lifecycle dependencies that must be explicitly audited before teardown.
+
+---
+
+# Operational Lessons
+
+The project reinforced that successful cloud-resource provisioning is only the first validation layer.
+
+A production-style platform should validate the complete dependency chain from infrastructure through application runtime:
+
+- Terraform configuration and drift
+- AWS infrastructure health
+- EKS control-plane state
+- worker-node readiness
+- Kubernetes networking
+- managed addons
+- workload identity
+- platform controllers
+- GitOps reconciliation
+- application health
+
+A healthy AWS resource does not automatically prove that the Kubernetes platform or application layer is healthy.

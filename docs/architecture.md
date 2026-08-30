@@ -1,227 +1,164 @@
 # Architecture
 
-## Architectural Overview
+## Overview
 
-The Enterprise Internal Developer Platform is divided into five logical
-layers.
+The Enterprise Internal Developer Platform is designed as a layered platform in which infrastructure provisioning, developer experience, CI, artifact management and Kubernetes deployment have clearly separated responsibilities.
 
-### 1. Developer Experience Layer
+![Architecture](../diagrams/enterprise-internal-developer-platform-architecture.png)
 
-Provides the developer-facing interface.
+---
 
-Components:
+## Architecture Goals
 
-- Backstage
-- Software Catalog
-- Software Templates
-- TechDocs
+The architecture was designed around the following goals:
 
-### 2. Source and Continuous Integration Layer
+1. Developer self-service
+2. Standardized application delivery
+3. Reproducible infrastructure
+4. GitOps-based deployment
+5. Short-lived workload credentials
+6. Centralized secrets management
+7. Private workload networking
+8. Reusable deployment abstractions
+9. Separation between CI and CD
+10. Reduced developer cognitive load
 
-Provides source control and application build automation.
+---
 
-Components:
+## Architecture Layers
 
-- GitHub
-- GitHub Actions
-- Trivy
-- Docker
+### Developer Experience Layer
 
-### 3. GitOps Delivery Layer
+Backstage acts as the entry point into the platform.
 
-Controls application desired state and Kubernetes deployment.
+Responsibilities include:
 
-Components:
+- software catalog
+- service ownership metadata
+- software templates
+- Golden Path workflows
 
-- Git repositories
-- Argo CD
-- Helm
+### Continuous Integration Layer
 
-### 4. Runtime Platform Layer
+GitHub Actions performs:
 
-Provides the Kubernetes application runtime.
+- source validation
+- application build
+- automated testing
+- container image build
+- security scanning
+- ECR publication
 
-Components:
+GitHub Actions authenticates to AWS through OIDC rather than stored long-lived AWS access keys.
 
-- AWS
-- Amazon EKS
-- Amazon ECR
-- Kubernetes
+### Artifact Layer
 
-### 5. Platform Services Layer
+Amazon ECR stores immutable container artifacts.
 
-Provides security, secrets, policy, and observability.
+The registry acts as the boundary between CI and runtime deployment.
 
-Components:
+### GitOps Layer
 
-- AWS Secrets Manager
-- External Secrets Operator
-- Kyverno
-- Prometheus
-- Grafana
+Argo CD continuously compares the desired Kubernetes state stored in Git with the actual state running in EKS.
 
-## High-Level Request Flow
+This provides:
 
+- declarative deployment
+- reconciliation
+- drift detection
+- deployment traceability
+
+### Kubernetes Runtime Layer
+
+Amazon EKS provides the Kubernetes control plane.
+
+Worker nodes run in private subnets and host platform and application workloads.
+
+### Data Layer
+
+Amazon RDS PostgreSQL provides persistent metadata storage for Backstage.
+
+The database is private and is not exposed directly to the Internet.
+
+### Identity and Secrets Layer
+
+AWS IAM and EKS Pod Identity provide AWS authentication to workloads.
+
+AWS Secrets Manager provides external secret storage.
+
+External Secrets provides controlled synchronization into Kubernetes.
+
+---
+
+## Network Architecture
+
+```text
+Internet
+   |
+Internet Gateway
+   |
+Public Subnets
+   |
+NAT / Load Balancer
+   |
+Private Subnets
+   |
++-----------------------+
+| EKS Worker Nodes      |
+| Backstage             |
+| Platform Controllers  |
+| Applications          |
++-----------------------+
+          |
+          v
+    Private RDS
+```
+Two Availability Zones are used to demonstrate failure-domain separation.
+
+---
+
+## Deployment Architecture
+
+```text
 Developer
-    |
-    v
+   |
 Backstage
-    |
-    v
-Software Template
-    |
-    v
+   |
 GitHub Repository
-    |
-    v
+   |
 GitHub Actions
-    |
-    +--> Test
-    |
-    +--> Trivy Scan
-    |
-    +--> Docker Build
-    |
-    v
+   |
 Amazon ECR
-    |
-    v
-GitOps Desired State
-    |
-    v
+   |
+GitOps desired state
+   |
 Argo CD
-    |
-    v
+   |
 Amazon EKS
-    |
-    +--> Kyverno
-    |
-    +--> External Secrets
-    |
-    +--> Prometheus
-    |
-    +--> Grafana
+```
+---
 
-## Architecture Decisions
+## Infrastructure Lifecycle
 
-### Cloud Provider
+The platform distinguishes between durable and ephemeral infrastructure.
 
-AWS is used as the cloud platform for the initial implementation.
+## Durable resources
 
-Primary region:
+Examples:
 
-`us-east-1`
+- ECR repositories
+- IAM roles
+- GitHub OIDC provider
+- selected secrets and identity configuration
 
-### Environment Strategy
+## Ephemeral runtime resources
 
-The initial platform release will use a single `dev` environment.
+Examples:
 
-A single EKS cluster is intentionally used because this project focuses on
-Internal Developer Platform capabilities rather than demonstrating
-multi-environment Kubernetes architecture.
-
-### Kubernetes Runtime
-
-Amazon EKS will host:
-
-- Backstage
-- Argo CD
-- External Secrets Operator
-- Kyverno
-- Prometheus
-- Grafana
-- Demo application workloads
-
-### Backstage Persistence
-
-Backstage will use Amazon RDS PostgreSQL rather than a PostgreSQL pod running
-inside the Kubernetes cluster.
-
-This separates application compute from database lifecycle and provides a
-more production-oriented architecture.
-
-### Continuous Integration
-
-GitHub Actions will be responsible for:
-
-- Source validation
-- Tests
-- Security scanning
-- Container image build
-- Image publishing
-- GitOps desired-state updates
-
-GitHub Actions will not directly deploy application workloads to Kubernetes.
-
-### Continuous Delivery
-
-Argo CD will provide Kubernetes continuous delivery using GitOps.
-
-Git will remain the source of truth for Kubernetes desired state.
-
-### Application Packaging
-
-A reusable Helm chart will provide the platform-approved Kubernetes
-application standard.
-
-Application teams primarily provide service-specific values while the
-platform team maintains deployment templates.
-
-### Secrets Architecture
-
-AWS Secrets Manager will store application secrets.
-
-External Secrets Operator will synchronize required secrets into Kubernetes.
-
-Static cloud credentials will not be stored in application repositories.
-
-### Policy Enforcement
-
-Kyverno will enforce Kubernetes platform guardrails.
-
-Initial policies will include:
-
-- Disallow privileged containers
-- Require non-root execution
-- Require CPU/memory requests
-- Require CPU/memory limits
-- Restrict application images to approved registries
-- Disallow mutable `latest` image tags
-
-### Observability
-
-Prometheus will provide metrics collection.
-
-Grafana will provide platform and application dashboards.
-
-The goal of observability in this project is to make operational visibility
-part of the default developer experience.
-
-### Ingress
-
-The AWS Load Balancer Controller will integrate Kubernetes ingress resources
-with an AWS Application Load Balancer.
-
-### Node Infrastructure
-
-Amazon EKS Managed Node Groups will provide the initial worker-node
-infrastructure.
-
-Advanced node provisioning such as Karpenter is outside the initial platform
-scope.
-
-### Infrastructure as Code
-
-Terraform will manage AWS infrastructure using reusable modules.
-
-The primary modules will include:
-
-- Networking
+- VPC
+- NAT Gateway
 - EKS
-- IAM
-- ECR
+- worker nodes
 - RDS
-- Secrets
 
-Terraform remote state will be bootstrapped separately from the platform
-infrastructure.
+This separation allows expensive runtime resources to be destroyed when not required and reconstructed using Terraform.

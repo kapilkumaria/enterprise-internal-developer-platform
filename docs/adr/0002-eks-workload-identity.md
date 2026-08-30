@@ -69,3 +69,23 @@ Pod
 - Requires the EKS Pod Identity Agent
 - Applications must use supported AWS SDK credential-provider versions
 - Pod Identity is specific to Amazon EKS
+
+## Consequences
+
+### Positive
+
+- no long-lived AWS access keys are stored in Kubernetes
+- permissions can be assigned per workload
+- worker-node IAM permissions remain separate from application permissions
+- AWS credentials are temporary and automatically rotated
+- IAM policies remain centrally governed
+
+### Negative
+
+- the EKS Pod Identity Agent becomes a platform dependency
+- workloads must use compatible AWS credential-provider libraries
+- the implementation is specific to Amazon EKS
+
+## Result
+
+EKS Pod Identity provides the platform with workload-level AWS authorization while maintaining separation between Kubernetes workloads and EC2 worker-node credentials.

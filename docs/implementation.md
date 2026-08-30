@@ -1,120 +1,134 @@
 # Implementation Guide
 
-## Project Scope
+## Purpose
 
-The Enterprise Internal Developer Platform will provide a standardized
-developer experience for creating, deploying, securing, and operating
-containerized microservices on AWS EKS.
+This document describes the technical implementation of the Enterprise Internal Developer Platform.
 
-The platform will expose self-service workflows through Backstage while
-keeping infrastructure provisioning, security policy, deployment standards,
-and platform governance under centralized platform-team control.
+It focuses on how the infrastructure and platform components are assembled rather than the developer-facing workflow.
 
-## In Scope
+---
 
-The project includes:
+## 1. Terraform Foundation
 
-- AWS infrastructure provisioned through Terraform
-- Amazon EKS
-- Amazon ECR
-- IAM and Kubernetes workload identity
-- Backstage developer portal
-- Backstage Software Catalog
-- Backstage Software Templates
-- GitHub integration
-- GitHub Actions reusable CI
-- Docker image build
-- Trivy security scanning
-- Helm application packaging
-- GitOps-based deployment
-- Argo CD
-- External Secrets Operator
-- AWS Secrets Manager
-- Kyverno policy enforcement
-- Prometheus metrics
-- Grafana dashboards
-- TechDocs
-- Developer Golden Paths
-- Platform documentation
-- Failure testing and troubleshooting
+Terraform manages the AWS infrastructure.
 
-## Initial Golden Path
+The implementation is divided into reusable modules and environment-specific configuration.
 
-The first Golden Path will provision a standardized containerized
-microservice.
+```text
+terraform/
+├── bootstrap/
+├── environments/
+├── modules/
+└── policies/
+```
+The infrastructure lifecycle includes:
 
-The developer will provide basic metadata such as:
+```text
+terraform init
+      |
+terraform validate
+      |
+terraform plan
+      |
+review
+      |
+terraform apply
+      |
+AWS validation
+      |
+terraform plan
+      |
+drift validation
+```
+## Evidence
 
-- Service name
-- Description
-- Owner/team
-- Runtime
-- Environment
+---
 
-The platform will generate the standardized application structure and
-delivery configuration.
+## 2. Networking
 
-## Out of Scope for Initial Release
+The networking layer creates:
 
-The initial release will not attempt to implement:
+- VPC
+- public subnets
+- private subnets
+- Internet Gateway
+- NAT Gateway
+- route tables
+- subnet associations
 
-- Multi-cloud deployment
-- Production-grade organizational SSO
-- Complex cost-management platform
-- Full enterprise service mesh
-- Multi-region disaster recovery
-- Crossplane infrastructure provisioning
-- Multiple programming-language Golden Paths
-- Full production incident-management integration
+Private subnets host application runtime resources.
 
-These capabilities may be added later if they provide meaningful portfolio
-value.
+---
 
-## Success Criteria
+## 3. Amazon EKS
 
-The platform will be considered successfully implemented when:
+Amazon EKS provides the Kubernetes runtime.
 
-1. A developer can access the Backstage portal.
+The platform uses:
 
-2. The developer can select a standardized microservice Golden Path.
+- managed EKS control plane
+- managed node group
+- private worker networking
+- CoreDNS
+- kube-proxy
+- VPC CNI
+- EKS Pod Identity Agent
 
-3. The developer can provide service metadata through a self-service form.
+## Cluster Validation
 
-4. Backstage automatically creates a GitHub repository.
+## Worker Validation
 
-5. The generated repository contains standardized:
-   - Application structure
-   - Dockerfile
-   - CI workflow
-   - Helm configuration
-   - Catalog metadata
-   - Documentation structure
+## Addon Validation
 
-6. GitHub Actions automatically:
-   - Tests the application
-   - Performs security scanning
-   - Builds the container image
-   - Pushes the image to Amazon ECR
+---
 
-7. Application desired state is managed through Git.
+## 4. PostgreSQL
 
-8. Argo CD deploys the application to Amazon EKS.
+Amazon RDS PostgreSQL provides Backstage's persistent database.
 
-9. Kubernetes security policies are enforced using Kyverno.
+Security characteristics include:
 
-10. Application secrets are retrieved securely from AWS Secrets Manager.
+- private network placement
+- encrypted storage
+- no public database endpoint
+- controlled security-group access
+- AWS-managed master credentials
 
-11. Application metrics are available through Prometheus.
+---
 
-12. Operational visibility is available through Grafana.
+## 5. Backstage
 
-13. The service is registered and visible in the Backstage Software Catalog.
+Backstage runs as a Kubernetes workload and acts as the platform's developer portal.
 
-14. Service documentation is available through TechDocs.
+---
 
-15. GitOps drift can be detected and reconciled automatically.
+## 6. Amazon ECR
 
-16. Failure scenarios and troubleshooting procedures are documented.
+ECR stores container images produced by CI.
 
-17. The entire platform infrastructure can be recreated using Infrastructure
-    as Code.
+---
+
+## 7. Argo CD
+
+Argo CD provides continuous deployment using GitOps reconciliation.
+
+---
+
+## 8. Platform Validation
+
+Following infrastructure provisioning, individual layers are validated before higher-level platform services are installed.
+
+Validation includes:
+
+- Terraform drift
+- AWS resource state
+- Kubernetes node readiness
+- system pod health
+- workload identity
+- RDS availability
+- Backstage health
+- GitOps synchronization
+- application runtime
+
+Textual validation evidence is retained under:
+`docs/evidence/`
