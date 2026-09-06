@@ -1,0 +1,31 @@
+===== PROJECT =====
+Enterprise Internal Developer Platform
+
+===== VERIFICATION DATE =====
+2026-09-06T12:18:50-06:00
+
+===== PROJECT-TAGGED AWS RESOURCES =====
+
+===== EKS CLUSTERS MATCHING PROJECT =====
+
+===== ECR REPOSITORIES MATCHING PROJECT =====
+
+===== SECRETS MANAGER MATCHING PROJECT =====
+
+===== PROJECT VPCS =====
+
+===== PROJECT NAT GATEWAYS =====
+
+===== LOAD BALANCERS =====
+
+===== RETAINED TERRAFORM BOOTSTRAP STATE =====
+aws_s3_bucket.terraform_state
+aws_s3_bucket_ownership_controls.terraform_state
+aws_s3_bucket_public_access_block.terraform_state
+aws_s3_bucket_server_side_encryption_configuration.terraform_state
+aws_s3_bucket_versioning.terraform_state
+random_id.bucket_suffix
+
+===== TEARDOWN POLICY =====
+Runtime/workload infrastructure: destroyed
+Terraform bootstrap/state infrastructure: intentionally retained

@@ -1,0 +1,55 @@
+===== DATE =====
+2026-08-30T18:23:45-06:00
+
+===== NODES =====
+NAME                           STATUS   ROLES    AGE     VERSION               INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                        KERNEL-VERSION                           CONTAINER-RUNTIME
+ip-10-50-11-39.ec2.internal    Ready    <none>   4h40m   v1.36.3-eks-cb19647   10.50.11.39    <none>        Amazon Linux 2023.12.20260817   6.18.41-94.142.amzn2023.x86_64 (amd64)   containerd://2.2.5+unknown
+ip-10-50-12-237.ec2.internal   Ready    <none>   4h40m   v1.36.3-eks-cb19647   10.50.12.237   <none>        Amazon Linux 2023.12.20260817   6.18.41-94.142.amzn2023.x86_64 (amd64)   containerd://2.2.5+unknown
+
+===== PODS =====
+NAMESPACE              NAME                                                READY   STATUS    RESTARTS        AGE
+argocd                 argocd-application-controller-0                     1/1     Running   0               4h17m
+argocd                 argocd-applicationset-controller-7fd7d9b4fd-698c6   1/1     Running   0               4h17m
+argocd                 argocd-dex-server-66f66bdc78-6c25z                  1/1     Running   2 (4h17m ago)   4h17m
+argocd                 argocd-notifications-controller-6d6dfd6748-ggvp6    1/1     Running   0               4h17m
+argocd                 argocd-redis-7c6f594b4f-fkmvd                       1/1     Running   0               4h17m
+argocd                 argocd-repo-server-5bbc9dddb4-9cjq6                 1/1     Running   0               4h17m
+argocd                 argocd-server-5c9465c456-dmsvd                      1/1     Running   0               4h17m
+backstage              backstage-7c95689c44-7lqdl                          1/1     Running   0               52m
+external-secrets       external-secrets-7f77458895-7x2j8                   1/1     Running   0               4h23m
+external-secrets       external-secrets-cert-controller-b88bd7b49-xtsrv    1/1     Running   0               4h23m
+external-secrets       external-secrets-webhook-7477bbb46f-hvh5b           1/1     Running   0               4h23m
+idp-golden-path-demo   idp-golden-path-demo-5d6674d74b-64jp7               1/1     Running   0               4h12m
+kube-system            aws-load-balancer-controller-8578d9c9ff-c7nzk       1/1     Running   0               4h3m
+kube-system            aws-load-balancer-controller-8578d9c9ff-fsjlf       1/1     Running   0               4h3m
+kube-system            aws-node-nhx96                                      2/2     Running   0               4h40m
+kube-system            aws-node-tpwrd                                      2/2     Running   0               4h40m
+kube-system            coredns-c7fcc45d5-47klx                             1/1     Running   0               4h39m
+kube-system            coredns-c7fcc45d5-whbrp                             1/1     Running   0               4h39m
+kube-system            eks-pod-identity-agent-kbp5z                        1/1     Running   0               4h40m
+kube-system            eks-pod-identity-agent-vxrjg                        1/1     Running   0               4h40m
+kube-system            kube-proxy-98wfg                                    1/1     Running   0               4h39m
+kube-system            kube-proxy-qqhx6                                    1/1     Running   0               4h39m
+
+===== INGRESS =====
+NAMESPACE   NAME        CLASS   HOSTS                        ADDRESS                                                                   PORTS   AGE
+backstage   backstage   alb     backstage.kapilkumaria.com   k8s-backstag-backstag-f74aeeaf05-1075480927.us-east-1.elb.amazonaws.com   80      3h14m
+
+===== SERVICES =====
+NAMESPACE              NAME                                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+argocd                 argocd-applicationset-controller    ClusterIP   172.20.217.24    <none>        7000/TCP                 4h17m
+argocd                 argocd-dex-server                   ClusterIP   172.20.139.82    <none>        5556/TCP,5557/TCP        4h17m
+argocd                 argocd-redis                        ClusterIP   172.20.214.196   <none>        6379/TCP                 4h17m
+argocd                 argocd-repo-server                  ClusterIP   172.20.244.59    <none>        8081/TCP                 4h17m
+argocd                 argocd-server                       ClusterIP   172.20.113.15    <none>        80/TCP,443/TCP           4h17m
+backstage              backstage                           ClusterIP   172.20.86.218    <none>        7007/TCP                 4h6m
+default                kubernetes                          ClusterIP   172.20.0.1       <none>        443/TCP                  4h45m
+external-secrets       external-secrets-webhook            ClusterIP   172.20.187.205   <none>        443/TCP                  4h23m
+idp-golden-path-demo   idp-golden-path-demo                ClusterIP   172.20.230.196   <none>        3000/TCP                 4h13m
+kube-system            aws-load-balancer-webhook-service   ClusterIP   172.20.75.19     <none>        443/TCP                  4h3m
+kube-system            eks-extension-metrics-api           ClusterIP   172.20.139.166   <none>        443/TCP                  4h45m
+kube-system            kube-dns                            ClusterIP   172.20.0.10      <none>        53/UDP,53/TCP,9153/TCP   4h44m
+
+===== ARGO CD APPLICATIONS =====
+NAME                   SYNC STATUS   HEALTH STATUS
+idp-golden-path-demo   Synced        Healthy
