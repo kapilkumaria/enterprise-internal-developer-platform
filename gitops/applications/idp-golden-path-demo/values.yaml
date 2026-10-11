@@ -2,7 +2,7 @@ fullnameOverride: idp-golden-path-demo
 
 image:
   repository: 931058976119.dkr.ecr.us-east-1.amazonaws.com/enterprise-idp/services/idp-golden-path-demo
-  tag: sha-d11c8e751275631245c22f712a2a6ce95e51c1bf
+  tag: rebuild-b076afba49eb-20261011T222512Z
 
 backstage:
   kubernetesId: idp-golden-path-demo
