@@ -118,6 +118,22 @@ IAM Trust Policy
       v
 Temporary AWS Credentials
 ```
+
+### Shared AWS OIDC Provider Prerequisite
+
+Project 5 reuses the account-level GitHub Actions OIDC provider.
+The Terraform module reads the existing provider using
+`data "aws_iam_openid_connect_provider"` instead of creating a new provider.
+
+Before running Terraform for Project 5, verify that the AWS account
+contains an OIDC provider with the URL
+`https://token.actions.githubusercontent.com` and the client ID
+`sts.amazonaws.com`.
+
+For a fresh AWS account, create and verify this provider during
+account bootstrap before running the Project 5 Terraform plan or apply.
+Do not create a duplicate provider when one already exists.
+
 The AWS OIDC provider is:
 
 `token.actions.githubusercontent.com`
